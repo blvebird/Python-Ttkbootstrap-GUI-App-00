@@ -4,7 +4,7 @@
 #------------------------------------------------------------------------------
 #
 # Spyder Editor
-# Name          : _Cyg_sub1.py
+# Name          : _Cyg_sub0.py
 # Purpose       : **
 # Comment Lang  : JP
 # Author        : Blve Bird
@@ -18,7 +18,8 @@
 import ttkbootstrap            as     ttk
 from   ttkbootstrap            import Style
 from   ttkbootstrap.dialogs    import Messagebox
-from   ttkbootstrap.widgets.scrolled import ScrolledText
+#from   ttkbootstrap.widgets.scrolled import ScrolledText
+from   ttkbootstrap.scrolled   import ScrolledText
 from   ttkbootstrap.constants  import *
 from   ttkbootstrap.constants  import END
 import tkinter
@@ -115,7 +116,7 @@ def load_inverted_icon( path: str, size=(24, 24), flg=0 ) -> ImageTk.PhotoImage:
 
     # RGBAを分解してRGBだけ反転
     r, g, b, a  = img.split()
-    rgb         = Image.merge( "RGB", (r,g,b) )
+    rgb         = Image.merge( "RGB" , (r,g,b) )
     if  flg:
         rgb     = ImageOps.invert( rgb )
     img_inv     = Image.merge( "RGBA", (*rgb.split(),a) )
@@ -159,9 +160,9 @@ class MainMC0( ttk.Frame ):
             parent.Label2.config( text=current_time )
             # 10000ミリ秒後に、再び update_time 関数を呼び出す
             # これにより、10秒ごとに時刻が更新され続けるループが作られる
-            if  parent.LBL2id:
-                parent.LBL2id  = parent.Label2.after( 10000, update_time ) # 10秒後
-            #print( 'update_time', parent.LBL2id )
+            parent.LBL2id  = parent.Label2.after( 15000, update_time ) # 15秒後
+        # 初回呼び出し
+        parent.LBL2id = None    
         update_time ()
         
 #==============================================================================
