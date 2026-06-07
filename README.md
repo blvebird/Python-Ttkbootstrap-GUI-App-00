@@ -1,52 +1,5 @@
 # Python-Ttkbootstrap-GUI-App-00
 FX Trading Tool for XMTrading MT5
+															
+<img width="757" height="961" alt="image" src="https://github.com/user-attachments/assets/b5657101-4556-412a-b931-030a32d7430c" />
 
-_Cyg_main.py		
-	class Application( ttk.window )	
-		def __init__( self, title, size )
-		def on_closing( self )
-	class MenuTOP( tk.Menu )	
-		def __init__( self, parent )
-	class MainTOP( ttk.Frame )	
-		def __init__( self, parent )
-		def create_widgets( self )
-	class MainML0( ttk.Frame )	
-		def __init__( self, parent )
-		def create_widgets( self, parent )
-	class MainMR0( ttk.Frame )	
-		def __init__( self, parent )
-		def create_widgets( self, parent )
-	class MainBTM( ttk.Frame )	
-		def __init__( self, parent )
-		def create_widgets( self, parent )
-_Cyg_sub0.py		
-	def Image_loader( parent )	
-	def show_message1( parent )	
-	def resize_window_big( parent )	
-	def resize_window_def( parent )	
-	def resize_window_full( parent )	
-	def load_inverted_icon( path: str, size, flg )->ImageTk.PhotoImage	
-	class MainMC0( ttk.Frame )	
-		def __init__( self, parent )
-		def create_widgets( self, parent )
-	class MainMC1( ttk.Frame )	
-		def __init__( self, parent )
-		def create_widgets( self, parent )
-_Mt5_main.py		
-	def mt5_close( mt5_EXE )	
-	def mt5_config( fname )	
-	def update_chart( parent, interval, tNm, tFm, count, PI0 )	
-	class MT5_data( ttk.Frame )	
-		def __init__( self, parent )
-		def make_chart( self )
-	class MT5_main( ttk.Frame )	
-		def __init__( self, parent )
-		def mt5_timef( self, tt )
-		def mt5_login( self )
-		def mt5_sdown( self )
-_Mt5_grph.py		
-	def add_indicators( df )	
-	def plot_candles( ax, df, width_ratio, up_color, down_color, grid_color )	
-	def apply_time_axis( ax, df, original_index, timeframe, xrot, xsiz )	
-	def create_fig( df_all, timeframe, bars, xrot, xsiz )	
-<img width="127" height="961" alt="image" src="https://github.com/user-attachments/assets/1a2ed777-f450-436a-9723-6c9f10e392b1" />
