@@ -26,7 +26,9 @@ import tkinter                 as     tk
 import ttkbootstrap            as     ttk
 from   ttkbootstrap            import Style
 from   ttkbootstrap.dialogs    import Messagebox
-from   ttkbootstrap.widgets.scrolled import ScrolledText
+#from   ttkbootstrap.widgets.scrolled import ScrolledText
+from   ttkbootstrap.scrolled   import ScrolledText
+
 from   ttkbootstrap.constants  import *
 from   ttkbootstrap.constants  import END
 import tkinter
@@ -173,7 +175,7 @@ class Application( ttk.Window ):
             #time.sleep(2.0)
             #task = self.Label3.after_cancel
         if( self.LBL2id is not None ):
-            self.Label3.after_cancel( self.LBL2id )
+            self.Label2.after_cancel( self.LBL2id )
             self.LBL2id = None # RESET
         if( self.CAN0id is not None ):
             self.Canvs0.after_cancel( self.CAN0id )
@@ -193,7 +195,7 @@ class Application( ttk.Window ):
 #
 # ::File
 # ::View
-# ::Charts
+# ::MT5
 # ::Window
 # ::Help
 #
@@ -287,7 +289,7 @@ class MenuTOP( tk.Menu ):
         #----------------------------------------------------------------------
         #======================================================================
         self.chrt_menu  = tk.Menu   ( self, tearoff= False, **menu_style )
-        self.add_cascade            ( label="Charts"    ,      menu=self.chrt_menu, underline=0 )
+        self.add_cascade            ( label="MT5  "    ,      menu=self.chrt_menu, underline=0 )
         #----------------------------------------------------------------------
 
         #----------------------------------------------------------------------
