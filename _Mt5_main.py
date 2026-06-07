@@ -29,7 +29,8 @@ import tkinter                 as     tk
 import ttkbootstrap            as     ttk
 from   ttkbootstrap            import Style
 from   ttkbootstrap.dialogs    import Messagebox
-from   ttkbootstrap.widgets.scrolled import ScrolledText
+#from   ttkbootstrap.widgets.scrolled import ScrolledText
+from   ttkbootstrap.scrolled   import ScrolledText
 from   ttkbootstrap.constants  import *
 from   ttkbootstrap.constants  import END
 import tkinter
@@ -78,6 +79,8 @@ import plotly.graph_objects    as     go
 import plotly.io               as     pio
 from   datetime                import datetime
 #------------------------------------------------------------------------------
+from   _Mt5_grph               import create_fig, prepare_df_for_plot
+#------------------------------------------------------------------------------
 
 #------------------------------------------------------------------------------
 # Global Variables
@@ -92,52 +95,29 @@ from   datetime                import datetime
 #
 #------------------------------------------------------------------------------
 #==============================================================================
-my_style = { 'base_mpl_style': 'fast',
-             'marketcolors': {'candle': {'up': '#d7003a', 'down': '#5383c3'},
-                              'edge'  : {'up': '#d7003a', 'down': '#5383c3'},
-                              'wick'  : {'up': '#ffffff', 'down': '#ffffff'},
-                              'ohlc'  : {'up': '#d7003a', 'down': '#5383c3'},
-                              'volume': {'up': '#d7003a', 'down': '#5383c3'},
-                              'vcedge': {'up': '#d7003a', 'down': '#5383c3'},
-                              'vcdopcod': False,
-                              'alpha': 0.9},
-             'mavcolors': None,
-             'facecolor': '#1f1f1f',
-             'gridcolor': '#808080',
-             'gridstyle': None,
-             'y_on_right': False,
-             'rc': {'axes.edgecolor': '#f8f8ff',
-                    'axes.grid'     :  True,
-                    'axes.grid.axis': 'y',
-                    'grid.color'    : '#000000',
-                    'grid.linestyle': '--'
-                   },
-             'base_mpf_style': 'None'
-           }
-
-timeframe_dict = {
-    mt5.TIMEFRAME_M1 :     60, #
-    mt5.TIMEFRAME_M2 :    120,
-    mt5.TIMEFRAME_M3 :    180,
-    mt5.TIMEFRAME_M4 :    240,
-    mt5.TIMEFRAME_M5 :    300, #
-    mt5.TIMEFRAME_M6 :    360,
-    mt5.TIMEFRAME_M10:    600,
-    mt5.TIMEFRAME_M12:    720,
-    mt5.TIMEFRAME_M15:    900, #
-    mt5.TIMEFRAME_M20:   1200,
-    mt5.TIMEFRAME_M30:   1800, #
-    mt5.TIMEFRAME_H1 :   3600, #
-    mt5.TIMEFRAME_H2 :   7200,
-    mt5.TIMEFRAME_H3 :  10800,
-    mt5.TIMEFRAME_H4 :  14400, #
-    mt5.TIMEFRAME_H6 :  21600,
-    mt5.TIMEFRAME_H8 :  28800,
-    mt5.TIMEFRAME_H12:  43200,
-    mt5.TIMEFRAME_D1 :  86400, #
-    mt5.TIMEFRAME_W1 : 604800, #
-    mt5.TIMEFRAME_MN1:2592000, #
-}
+timeframe_dict = {			
+	mt5.TIMEFRAME_M1 :	60	, #
+	mt5.TIMEFRAME_M2 :	120	,
+	mt5.TIMEFRAME_M3 :	180	,
+	mt5.TIMEFRAME_M4 :	240	,
+	mt5.TIMEFRAME_M5 :	300	, #
+	mt5.TIMEFRAME_M6 :	360	,
+	mt5.TIMEFRAME_M10:	600	,
+	mt5.TIMEFRAME_M12:	720	,
+	mt5.TIMEFRAME_M15:	900	, #
+	mt5.TIMEFRAME_M20:	1200	,
+	mt5.TIMEFRAME_M30:	1800	, #
+	mt5.TIMEFRAME_H1 :	3600	, #
+	mt5.TIMEFRAME_H2 :	7200	,
+	mt5.TIMEFRAME_H3 :	16200	,
+	mt5.TIMEFRAME_H4 :	20160	, #
+	mt5.TIMEFRAME_H6 :	32400	,
+	mt5.TIMEFRAME_H8 :	43200	,
+	mt5.TIMEFRAME_H12:	64800	,
+	mt5.TIMEFRAME_D1 :	129600	, #
+	mt5.TIMEFRAME_W1 :	604800	, #
+	mt5.TIMEFRAME_MN1:	2592000	, #
+}			
 
 timeframe_numA = [
     mt5.TIMEFRAME_M1 , #  0#
@@ -187,6 +167,10 @@ timeframe_numB = [
      8,#mt5.TIMEFRAME_MN1, # 20#
 ]
 
+timeMag     = 140
+viewMag     =  81
+symbol      = 'USDJPY'
+
 #==============================================================================
 #------------------------------------------------------------------------------
 #
@@ -235,6 +219,9 @@ def mt5_config( fname ):
 #
 # MT5 Sub Function 3
 #
+# tFm: timeframe
+# tNm: timeframe_dict[tFm]*timeMag
+#
 #
 #------------------------------------------------------------------------------
 #==============================================================================
@@ -243,7 +230,7 @@ def update_chart ( parent, interval, tNm, tFm, count, photoimage0 ):
     # Spyderに表示される svg, browser, png
     pio.renderers.default   = 'svg'
     # 期間を指定    
-    rates           = mt5.copy_rates_from_pos( 'USDJPY', tFm, 0, 1 )
+    rates           = mt5.copy_rates_from_pos( symbol, tFm, 0, 1 )
     menu_top        = parent.menuTOP
     if  rates is None or len(rates)==0 :
         #
@@ -277,7 +264,7 @@ def update_chart ( parent, interval, tNm, tFm, count, photoimage0 ):
         date_from           = datetime( tSx.year, tSx.month, tSx.day, tSx.hour, tSx.minute, tSx.second, 0, tzinfo=timezone ) #2024/6/5 0:00
         date_to             = datetime( tEx.year, tEx.month, tEx.day, tEx.hour, tEx.minute, tEx.second, 0, tzinfo=timezone ) #2024/6/5 0:10    
         # データを抽出する処理
-        ticks               = mt5.copy_rates_range( "USDJPY", tFm, date_from, date_to )   
+        ticks               = mt5.copy_rates_range( symbol, tFm, date_from, date_to )
         if  ticks is None or len(ticks)==0 :
             #
             # ERROR: LoginできていないorMT5アプリが閉じられた
@@ -309,23 +296,25 @@ def update_chart ( parent, interval, tNm, tFm, count, photoimage0 ):
             #
             df              = pd.DataFrame( ticks )
             df['time']      = pd.to_datetime(df['time'], unit='s')
-            df.drop         (columns=['spread','real_volume'],  inplace=True)
+            df.drop         (columns=['spread', 'real_volume'], inplace=True)
             df.rename       (columns={'tick_volume': 'volume'}, inplace=True)
             df.set_index    ('time', inplace=True)
             #NMP            = df.to_numpy() # NP[hour*minuite][5]
             #CLS            = NMP[:,3]      # Close
             buf             = io.BytesIO()  # bufferを用意
-            FIG, axlist     = mpf.plot( df,
-                                       type         = 'candle',
-                                       mav          = (5, 20),
-                                       volume       = True,
-                                       figratio     = (10, 5),
-                                       figscale     =  1.1,
-                                       style        = my_style,
-                                       tight_layout = True,
-                                       figsize      = (8.00,6.00),
-                                       savefig      = buf,
-                                       returnfig    = True )
+            #------------------------------------------------------------------
+            ###################################################################
+
+            
+            FIG, ax         = create_fig( df, tFm, viewMag, 0, 8 )
+            
+
+            ###################################################################
+            #------------------------------------------------------------------            
+            buf = io.BytesIO()
+            FIG.savefig(buf, format="png", dpi=100, bbox_inches="tight")
+            plt.close(FIG)
+            buf.seek(0)
             #------------------------------------------------------------------
             #FIG.savefig     ( buf, format='png' )       # bufferに保持
             enc             = np.frombuffer( buf.getvalue(), dtype=np.uint8 ) # bufferからの読み出し
@@ -361,7 +350,7 @@ def update_chart ( parent, interval, tNm, tFm, count, photoimage0 ):
             if  parent.CAN0id is not None:
                 parent.Canvs0.after_cancel( parent.CAN0id )
                 tFm     = timeframe_numA [parent.mt5_NUM_BTC]   # mt5_NUM_BTC:0~20
-                tNm     = (timeframe_dict[tFm])*60              # hour*minuite*sec
+                tNm     = (timeframe_dict[tFm])*timeMag         # hour*minuite*sec
             #------------------------------------------------------------------
             # 新しく予約してそのIDを必ず保持
             #------------------------------------------------------------------
@@ -413,7 +402,7 @@ class MT5_data( ttk.Frame ):
                 #--------------------------------------------------------------
                 count   = 0
                 tFm     = timeframe_numA[ parent.mt5_NUM_BTC ] # mt5_NUM_BTC:0~20
-                tNm     = (timeframe_dict[tFm])*60      # hour*minuite*sec
+                tNm     = (timeframe_dict[tFm])*timeMag # hour*minuite*sec
                 interV  = (timeframe_dict[tFm])*1000//4 # sec*1000[ms]
                 if  parent.CAN0id is not None:
                     parent.mt5_BTL02_PUSH   = False
@@ -518,7 +507,7 @@ class MT5_main( ttk.Frame ):
                 if( parent.mt5_FLG_EXE == True and parent.mt5_FLG_LIN == True ):
                     count   = 0
                     tFm     = timeframe_numA [parent.mt5_NUM_BTC]   # mt5_NUM_BTC:0~20
-                    tNm     = (timeframe_dict[tFm])*60              # hour*minuite*sec
+                    tNm     = (timeframe_dict[tFm])*timeMag         # hour*minuite*sec
                     interV  = (timeframe_dict[tFm])*1000//4         # sec*1000[ms]
                     if  parent.CAN0id is not None:
                         parent.Canvs0.after_cancel( parent.CAN0id )
